@@ -7,9 +7,9 @@ var fs = require("fs")
 var bodyParser = require('body-parser');
 
 //Store all JS and CSS in Scripts folder.
-//app.listen(process.env.port)
+app.listen(process.env.port)
 
-app.listen(8080)
+//app.listen(8080)
 app.use(bodyParser.json());
 app.get('/',function(req,res){
   res.sendFile(__dirname + "/HTMLPage.html");
