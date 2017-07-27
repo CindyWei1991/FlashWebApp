@@ -1,0 +1,132 @@
+
+Getting people and profile information
+
+After you have signed in a user with Google, you can access the user's age range, language, public profile information, and people that they have circled. If you request the plus.profile.emails.read scope, you can also get their email address. With this rich social data, you can build engaging experiences and an instant community in your app. For example, you might connect your user with their friends that also use your app or you might make suggestions based on their friends' activities within your app.
+
+Only a subset of the people in the user's circles might be visible to your app, as users can choose which people they make visible to your app when they Sign-in with Google.
+Before you begin
+
+You must create a Google API Console project, create an OAuth 2.0 client ID, and register your JavaScript origins and redirect URIs:
+
+Go to the Google API Console  .
+From the project drop-down, select an existing project  , or create a new one by selecting Create a new project.
+Note: Use a single project to hold all platform instances of your app (Android, iOS, web, etc.), each with a different Client ID.
+
+Enable the Google+ API service:
+In the list of Google APIs, search for the Google+ API service.
+Select Google+ API from the results list.
+Press the Enable API button. Wait for the API to be enabled.
+This action adds the service to the Enabled APIs tab, which you can access by selecting API Manager on the left menu. You can turn off the Google Cloud services if you don't need them. Enable any other APIs that your app requires.
+In the sidebar under "API Manager", select Credentials, then select the OAuth consent screen tab.
+Choose an Email Address, specify a Product Name, and press Save.
+In the Credentials tab, select the New credentials drop-down list, and choose OAuth client ID.
+Under Application type, select Web application. 
+Register the origins from which your app is allowed to access the Google APIs, as follows. An origin is a unique combination of protocol, hostname, and port.
+In the Authorized JavaScript origins field, enter the origin for your app. You can enter multiple origins to allow for your app to run on different protocols, domains, or subdomains. You cannot use wildcards. In the example below, the second URL could be a production URL.
+http://localhost:8080
+https://myproductionurl.example.com
+The Authorized redirect URI field does not require a value. Redirect URIs are not used with JavaScript APIs.
+Press the Create button.
+From the resulting OAuth client dialog box, copy the Client ID and Client secret. The Client ID lets your app access enabled Google APIs.
+Retrieve a collection of people
+
+The Google+ People API list endpoint has been deprecated. In the past, the https://www.googleapis.com/auth/plus.login scope allowed access to a list of people in the user's circles in addition to their name and profile information. Starting in September 2016, new grants of the plus.login scope will allow access to only the user's name and profile info; calls to the API return empty circle data for those new sign-ins. In 2017 Q1, you will get empty circle data back for all users.
+
+Instead of requesting the plus.login scope, we strongly recommend you instead request the profile scope.
+
+In place of the social connection data from the Google+ People API, you can get rich contacts data from the new Google People API.
+
+▸
+people.list (deprecated) documentation
+
+Retrieve profile information
+
+To retrieve profile information for a user, use the people.get API method. To get profile information for the currently authorized user, use the userId value of me.
+
+JavaScript example:
+
+// This sample assumes a client object has been created.
+// To learn more about creating a client, check out the starter:
+//  https://developers.google.com/+/quickstart/javascript
+gapi.client.load('plus','v1', function(){
+ var request = gapi.client.plus.people.get({
+   'userId': 'me'
+ });
+ request.execute(function(resp) {
+   console.log('Retrieved profile for:' + resp.displayName);
+ });
+});
+The people.get API method contains additional examples in other programming languages.
+
+Retrieve an authenticated user's email address
+
+You can get an email address for the authenticated user by using the email scope.
+
+The following JavaScript code example demonstrates how to:
+
+Use Google+ Sign-In to authenticate the user and get a valid OAuth 2.0 access token.
+Use the token to make a HTTP GET request to the https://www.googleapis.com/plus/v1/people/me REST end point.
+Parse the response and display the user's email address.
+Try it: 
+
+Code example:
+
+If you save this example as a local file, you should give it a ".jshtml" file extension, such as "signin_email_demo.jshtml".
+
+<html>
+
+  <head>
+    <title>Demo: Getting an email address using the Google+ Sign-in button</title>
+    <!-- Include the API client and Google+ client. -->
+    <script src = "https://plus.google.com/js/client:platform.js" async defer></script>
+  </head>
+
+  <body>
+    <!-- Container with the Sign-In button. -->
+    <div id="gConnect" class="button">
+      <button class="g-signin"
+          data-scope="email"
+          data-clientid="871593744843-d44iqbak174cccjmaiurb5s1jqh01msj.apps.googleusercontent.com"
+          data-callback="onSignInCallback"
+          data-theme="dark"
+          data-cookiepolicy="single_host_origin">
+      </button>
+      <!-- Textarea for outputting data -->
+      <div id="response" class="hide">
+        <textarea id="responseContainer" style="width:100%; height:150px"></textarea>
+      </div>
+    </div>
+ </body>
+
+  <script>
+  /**
+   * Handler for the signin callback triggered after the user selects an account.
+   */
+  function onSignInCallback(resp) {
+    gapi.client.load('plus', 'v1', apiClientLoaded);
+  }
+
+  /**
+   * Sets up an API call after the Google API client loads.
+   */
+  function apiClientLoaded() {
+    gapi.client.plus.people.get({userId: 'me'}).execute(handleEmailResponse);
+  }
+
+  /**
+   * Response callback for when the API client receives a response.
+   *
+   * @param resp The API response object with the user email and profile information.
+   */
+  function handleEmailResponse(resp) {
+    var primaryEmail;
+    for (var i=0; i < resp.emails.length; i++) {
+      if (resp.emails[i].type === 'account') primaryEmail = resp.emails[i].value;
+    }
+    document.getElementById('responseContainer').value = 'Primary email: ' +
+        primaryEmail + '\n\nFull Response:\n' + JSON.stringify(resp);
+  }
+
+  </script>
+
+</html
