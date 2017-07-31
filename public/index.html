@@ -66,7 +66,7 @@
 
 			<table class="message-table">
 			<!--order by category first and then time -->
-				<tr ng-repeat-start="message in messages | filter: searchText | filter: filterCategory">
+				<tr ng-repeat-start="message in messages | customOrder:'category' | customOrder:'time' | filter: searchText | filter: filterCategory">
 					<td>
 					<div class="icon circle small" ng-class="message.category">
 						<img ng-src="{{getCategoryImg(message.category)}}" class="icon-img small">

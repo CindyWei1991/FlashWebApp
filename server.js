@@ -6,11 +6,11 @@ var path    = require("path");
 var fs = require("fs")
 var bodyParser = require('body-parser');
 
-//Store all JS and CSS in Scripts folder.
-app.listen(process.env.port)
+//app.listen(process.env.port)
 
-//app.listen(8080)
+app.listen(8080)
 app.use(bodyParser.json());
+
 app.get('/',function(req,res){
   res.sendFile(__dirname + "/HTMLPage.html");
   //__dirname : It will resolve to your project folder.
@@ -32,16 +32,10 @@ app.post('/send/sendMessage', function (req, res) {
        		res.end();
    		});
     });
-
-   // First read existing users.
-   // fs.appendFile( __dirname + "/" + "public/message.json", JSON.stringify(req.body), function (err, data) {
-   //     res.end();
-   // });
 });
 
-
+//Store all JS and CSS in Scripts folder.
 app.use(express.static(path.join(__dirname, '/public')));
-
 
 console.log("Running at Port 3000");
 

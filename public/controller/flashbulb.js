@@ -10,9 +10,40 @@ app.config(function($routeProvider) {
         controller: 'flashbulbCtrl',
       })
 });
+
+function categoryOrder(item) {
+    switch(item) {
+      case 'fire':
+        return 4;
+
+      case 'blocker':
+        return 3;
+
+      case 'goodNews':
+        return 2;
+      case 'info':
+        return 1;
+    }  
+  }
+
+app.filter('customOrder', function() {
+	return function(items, field) {
+		var filtered = [];
+    	angular.forEach(items, function(item) {
+      		filtered.push(item);
+    	});
+		filtered.sort(function(a,b) {
+			return (categoryOrder(b[field]) > categoryOrder(a[field]) ? 1 : -1)
+		});
+
+		return filtered;
+
+	}
+});
+
+
 app.controller("flashbulbCtrl",function($scope, $http) {
 	$http.get('/messages').then(function(data) {
-		console.log(data.data.message)
 		$scope.messages = data.data.message;
 	});
 	// $http.get('http://flashbulb-api2-dev2.azurewebsites.net/api.php?action=get_message&uid=4').then(
